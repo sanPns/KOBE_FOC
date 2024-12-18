@@ -1,0 +1,10 @@
+focu\mui_u8g2.o: ..\Core\Src\u8g2\mui_u8g2.c
+focu\mui_u8g2.o: ..\Core\Src\u8g2\mui.h
+focu\mui_u8g2.o: D:\Keil\KeilFiles\MDK\ARM\ARMCC\Bin\..\include\stddef.h
+focu\mui_u8g2.o: D:\Keil\KeilFiles\MDK\ARM\ARMCC\Bin\..\include\stdint.h
+focu\mui_u8g2.o: D:\Keil\KeilFiles\MDK\ARM\ARMCC\Bin\..\include\string.h
+focu\mui_u8g2.o: ..\Core\Src\u8g2\u8g2.h
+focu\mui_u8g2.o: ..\Core\Src\u8g2\u8x8.h
+focu\mui_u8g2.o: D:\Keil\KeilFiles\MDK\ARM\ARMCC\Bin\..\include\stdarg.h
+focu\mui_u8g2.o: D:\Keil\KeilFiles\MDK\ARM\ARMCC\Bin\..\include\limits.h
+focu\mui_u8g2.o: ..\Core\Src\u8g2\mui_u8g2.h
