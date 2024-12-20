@@ -34,7 +34,6 @@
 #include "Encoder.h"
 #include "Driver.h"
 #include "CmdOrder.h"
-#include "CmdCtrl.h"
 
 /* USER CODE END Includes */
 
@@ -54,7 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint16_t Adcx[3] = {0};
+uint16_t Adcx[2] = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,29 +67,26 @@ void SystemClock_Config(void);
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-		float fil = 0.5f;
+	float fil = 0.5f;
+	//放大器放大50倍，采样电阻为0.005Ω，所以电流是 V/0.005/50 即 V*4
+	float t0 = (((float)Adcx[0]) / 4096.0f * 3.3f - 1.65f) * 4;
+	float t1 = (((float)Adcx[1]) / 4096.0f * 3.3f - 1.65f) * 4;
 
-		float t0 = (((float)Adcx[0])/4096.0f*3.3f-1.65f)*4;
-		float t1 = (((float)Adcx[1])/4096.0f*3.3f-1.65f)*4;
-		float t2 = (((float)Adcx[2])/4096.0f*3.3f-1.65f)*4;
-
-		Cur_val[0] = t0*(1.0f-fil)+Cur_val[0]*fil;
-		Cur_val[1] = t1*(1.0f-fil)+Cur_val[1]*fil;
-		Cur_val[2] = t2*(1.0f-fil)+Cur_val[2]*fil;	
-		
+	// 电流采样部分使用了低通滤波，实际上效果并不好，滤波后减少振动但是数据存在一定滞后性
+	Cur_val[0] = t0 * (1.0f - fil) + Cur_val[0] * fil;
+	Cur_val[1] = t1 * (1.0f - fil) + Cur_val[1] * fil;
+	Cur_val[2] = -Cur_val[1] - Cur_val[0];
+	// printf("%.2f,%.2f,%.2f\n",Cur_val[0],Cur_val[1],Cur_val[2]);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim2)
 	{
-		GetAngle();
 	}
 	if (htim == &htim3)
 	{
-		//HAL_ADC_Start_DMA(&hadc1, (uint32_t *)Adcx, 3);
-		Cur_Cycle();
-		Loc_PID();
+		FOC_Cycle();
 	}
 }
 
@@ -101,15 +97,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 	if (GPIO_Pin == KEY2_Pin)
 	{
-		
 	}
 	if (GPIO_Pin == KEY3_Pin)
 	{
-		
 	}
 	if (GPIO_Pin == KEY4_Pin)
 	{
-		
 	}
 }
 /* USER CODE END 0 */
@@ -155,21 +148,23 @@ int main(void)
 	MX_TIM3_Init();
 	MX_SPI2_Init();
 	/* USER CODE BEGIN 2 */
-	// OLED_Init(&hspi1);
 
 	AngInit();
+	// 初始化电角度
 	CmdOrder_Init(&huart3);
+	// 初始化指令解析
 	HAL_TIM_Base_Start_IT(&htim2);
+	// 这个定时器原本用来刷新oled屏幕，但因为懒得写UI，所以并没有使用它
 	HAL_TIM_Base_Start_IT(&htim3);
-	
+	// 启动FOC定时器
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
-
+	// 使能485通信
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+	// 校准ADC采样
 
-	//HAL_ADC_Start_DMA(&hadc1, (uint32_t *)Adcx, 3);
-
-	//u8g2_t u8g2;
-	//OLED_Init(&hspi1, &u8g2);
+	// u8g2_t u8g2;
+	// OLED_Init(&hspi1, &u8g2);
+	// 初始化u8g2图形库，仅对图形库进行移植
 
 	/* USER CODE END 2 */
 
@@ -177,7 +172,6 @@ int main(void)
 	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
-	
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

@@ -3,19 +3,19 @@
 #include "math.h"
 
 /********编码器*********/
-uint32_t LastEncoderAngle = 0,LastQuad = 0;
-int32_t  Rotation = 0;
+uint32_t LastEncoderAngle = 0, LastQuad = 0;
+int32_t Rotation = 0;
 /***********************/
-double EncoderAngle = 0;        // 角度
-float Speed = 0;                // 速度
-float SinThe = 0, CosThe = 0;   // 电角度sin，cos值
-float DeAngle = 0;			    // 初始化电角度零点
+double EncoderAngle = 0;	  // 角度
+float Speed = 0;			  // 速度
+float SinThe = 0, CosThe = 0; // 电角度sin，cos值
+float DeAngle = 0;			  // 初始化电角度零点
 /***********************/
 
 float TLE5012_GetAngle()
 {
 	float Angle;
-    uint32_t Quadrant = 0;
+	uint32_t Quadrant = 0;
 	uint8_t Encoder_Buf[2] = {0x80, 0x21};
 	float FilterPara = 0.82;
 
@@ -26,7 +26,9 @@ float TLE5012_GetAngle()
 	// 读取编码器原始数据
 
 	LastEncoderAngle = (uint8_t)(FilterPara * LastEncoderAngle + (1 - FilterPara) * Encoder_Buf[1]);
+	// 因为TLE5012B原始数据的低位存在抖动，这里对TLE5012B采集的原始数据进行简单的低通滤波
 	Angle = ((Encoder_Buf[0] << 8 | LastEncoderAngle) & 0x7fff) * 0.010986328f;
+	// 直接计算出角度 0.010986328f = 360 / (2^15)
 
 	Quadrant = Angle > 180 ? (Angle > 270 ? 4 : 3) : (Angle > 90 ? 2 : 1);
 	// 象限判断
@@ -49,9 +51,9 @@ void GetAngle()
 	Speed = FilterPara * Speed + (1 - FilterPara) * (Theta - EncoderAngle) * 1000.0f; // 计算速度使用了简单的低通滤波器，效果一般
 
 	EncoderAngle = Theta;
-	Theta *= (PI / 25.7142857f); // 因为1/25的精确度太低，所以这里没有使用乘法
+	Theta *= (PI * 0.03888888f); // 角度化为弧度，同时转换为电角度 PI * 0.03888888f = PI * 7 / 180
 	SinThe = sinf(Theta);
 	CosThe = cosf(Theta);
 
-	printf("%f\n",EncoderAngle);
+	// printf("%f\n",EncoderAngle);
 } // 获得电角度并计算出速度，及sin，cos值减少运算量

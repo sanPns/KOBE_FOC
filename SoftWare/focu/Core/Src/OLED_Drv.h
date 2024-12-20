@@ -10,7 +10,6 @@
 
 void OLED_Init(SPI_HandleTypeDef *hspi,u8g2_t *u8g2t);
 int OLED_printf(int line,int len, const char *format, ...);
-void OLED_circle(u8g2_uint_t x0, u8g2_uint_t y0, u8g2_uint_t rad, uint8_t option);
 
 #endif
 

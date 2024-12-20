@@ -66,11 +66,6 @@ int OLED_printf(int line,int len, const char *format, ...)
 	return ret;
 }
 
-void OLED_circle(u8g2_uint_t x0, u8g2_uint_t y0, u8g2_uint_t rad, uint8_t option)
-{
-	u8g2_DrawCircle(u8g2,x0,y0,rad,option);
-}
-
 void OLED_Init(SPI_HandleTypeDef *hspi,u8g2_t *u8g2t)
 {
 	OLED_hspi = hspi;

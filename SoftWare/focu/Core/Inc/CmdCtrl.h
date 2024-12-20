@@ -6,13 +6,13 @@
 #include <stdio.h>
 #include <math.h>
 
-typedef struct 
+typedef struct
 {
     char ComStr[4];
-    void (*CallBackFun)(const char*);
-}Com_Typedef;
+    void (*CallBackFun)(const char *);
+} Com_Typedef;
 
-void SetCmdTypedef(const char* ComString,void (*Fun)(const char*));
+void SetCmdTypedef(const char *ComString, void (*Fun)(const char *));
 void CmdCtrl_Init(UART_HandleTypeDef *huaring);
 
 #endif
