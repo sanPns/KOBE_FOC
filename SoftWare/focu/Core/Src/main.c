@@ -54,6 +54,7 @@
 
 /* USER CODE BEGIN PV */
 uint16_t Adcx[2] = {0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,11 +69,11 @@ void SystemClock_Config(void);
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	float fil = 0.5f;
-	//·Å´óÆ÷·Å´ó50±¶£¬²ÉÑùµç×èÎª0.005¦¸£¬ËùÒÔµçÁ÷ÊÇ V/0.005/50 ¼´ V*4
+	// Å´    Å´ 50            Îª0.005       Ôµ      V/0.005/50    V*4
 	float t0 = (((float)Adcx[0]) / 4096.0f * 3.3f - 1.65f) * 4;
 	float t1 = (((float)Adcx[1]) / 4096.0f * 3.3f - 1.65f) * 4;
 
-	// µçÁ÷²ÉÑù²¿·ÖÊ¹ÓÃÁËµÍÍ¨ÂË²¨£¬Êµ¼ÊÉÏÐ§¹û²¢²»ºÃ£¬ÂË²¨ºó¼õÉÙÕñ¶¯µ«ÊÇÊý¾Ý´æÔÚÒ»¶¨ÖÍºóÐÔ
+	//             Ê¹   Ëµ Í¨ Ë²   Êµ    Ð§       Ã£  Ë²       ñ¶¯µ      Ý´   Ò»   Íº   
 	Cur_val[0] = t0 * (1.0f - fil) + Cur_val[0] * fil;
 	Cur_val[1] = t1 * (1.0f - fil) + Cur_val[1] * fil;
 	Cur_val[2] = -Cur_val[1] - Cur_val[0];
@@ -150,21 +151,21 @@ int main(void)
 	/* USER CODE BEGIN 2 */
 
 	AngInit();
-	// ³õÊ¼»¯µç½Ç¶È
+	//   Ê¼    Ç¶ 
 	CmdOrder_Init(&huart3);
-	// ³õÊ¼»¯Ö¸Áî½âÎö
+	//   Ê¼  Ö¸     
 	HAL_TIM_Base_Start_IT(&htim2);
-	// Õâ¸ö¶¨Ê±Æ÷Ô­±¾ÓÃÀ´Ë¢ÐÂoledÆÁÄ»£¬µ«ÒòÎªÀÁµÃÐ´UI£¬ËùÒÔ²¢Ã»ÓÐÊ¹ÓÃËü
+	//      Ê±  Ô­      Ë¢  oled  Ä»      Îª    Ð´UI     Ô² Ã»  Ê¹    
 	HAL_TIM_Base_Start_IT(&htim3);
-	// Æô¶¯FOC¶¨Ê±Æ÷
+	//    FOC  Ê±  
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
-	// Ê¹ÄÜ485Í¨ÐÅ
+	// Ê¹  485Í¨  
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-	// Ð£×¼ADC²ÉÑù
+	// Ð£×¼ADC    
 
 	// u8g2_t u8g2;
 	// OLED_Init(&hspi1, &u8g2);
-	// ³õÊ¼»¯u8g2Í¼ÐÎ¿â£¬½ö¶ÔÍ¼ÐÎ¿â½øÐÐÒÆÖ²
+	//   Ê¼  u8g2Í¼ Î¿â£¬    Í¼ Î¿      Ö²
 
 	/* USER CODE END 2 */
 
